@@ -285,9 +285,16 @@ void drawCircle(int radius, int xInit = 0, int yInit = 0) {
 //Bitmap
 void displayBitmap(){
 	glColor3f(0, .9, 0);
-	glRasterPos2i(getRandomCoord(200, -200), getRandomCoord(200, -200));
+	glRasterPos2i(getRandomCoord(400, -200), getRandomCoord(400, -200));
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glBitmap(24, 24, 0, 0, 0, 0, tinyTree);
+}
+
+void drawTinyTrees() {
+	srand(time(NULL));
+	for (int i = 0; i < 5; i++) {
+		displayBitmap();
+	}
 }
 
 void drawCoordinateSystem() {
@@ -316,11 +323,8 @@ void myInit()
 void myDisplayCallback()
 {glClear(GL_COLOR_BUFFER_BIT);	// draw the background
  drawCoordinateSystem();
- srand(time(NULL));
- for (int i = 0; i < 5; i++) {
-	 displayBitmap();
- }
  
+ drawTinyTrees();
  glFlush(); // flush out the buffer contents
 }
 
