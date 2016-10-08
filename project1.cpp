@@ -22,6 +22,14 @@
 
 
 //***********************************************************************************
+// GLOBALS: for user controlled text to display.
+GLubyte bitmap[256];
+//Pixel Map
+GLfloat picture[675][900][3];
+// Window dimentions
+int windowX = 900;
+int windowY = 676;
+
 class Pixel {
 public:
 	Pixel(int x, int y) {
@@ -116,10 +124,6 @@ private:
 	float blue;
 };
 
-// GLOBALS: for user controlled text to display.
-GLubyte bitmap[256];
-//Pixel Map
-GLfloat picture[512][512][3];
 
 //Lines
 float slope(int top1, int top2, int bottom1, int bottom2){
@@ -187,8 +191,8 @@ void drawLine(int x1, int y1, int x2, int y2){
 //
 
 void drawPixelMap() {
-	glRasterPos2i(-256, -256);
-	glDrawPixels(512, 512, GL_RGB, GL_FLOAT, bitmap);
+	glRasterPos2i(-(windowX / 2), -(windowY / 2));
+	glDrawPixels(900, 675, GL_RGB, GL_FLOAT, picture);
 }
 
 
@@ -274,18 +278,42 @@ void drawCoordinateSystem() {
 	drawChar('X', true);
 }
 
+void read_pixel_map(){
+    std::fstream fin;
+    fin.open("pixel_map.txt");
+    float r, g, b;
+    int y = 0;
+    int x = 0;
+    if(fin.is_open()){
+        while(fin >> r){
+            fin >> g;
+            fin >> b;
+            picture[y][x][0] = r;
+            picture[y][x][1] = g;
+            picture[y][x][2] = b;
+            x++;
+            if(x == 900){
+                x = 0;
+                y++;
+            }
+        }
+    }
+}
+
 //***********************************************************************************
 void myInit()
 {glClearColor(1, 1, 1, 0);			// specify a background clor: white 
- gluOrtho2D(-200, 200, -200, 200);  // specify a viewing area
+ int x = windowX / 2;
+ int y = windowY / 2;
+ gluOrtho2D(-x, x, -y, y);  // specify a viewing area
 }
 
 //***********************************************************************************
 void myDisplayCallback()
-{glClear(GL_COLOR_BUFFER_BIT);	// draw the background
- drawCoordinateSystem();
- drawCircle(25);
- glFlush(); // flush out the buffer contents
+{
+    glClear(GL_COLOR_BUFFER_BIT);	// draw the background
+    drawPixelMap();
+    glFlush(); // flush out the buffer contents
 }
 
 
@@ -300,12 +328,12 @@ int main()
     glutInit(&argc, argv);
     //====================================================================//
 
-    glutInitWindowSize(400, 400);				// specify a window size
+    glutInitWindowSize(windowX, windowY);				// specify a window size
     glutInitWindowPosition(100, 0);			// specify a window position
     glutCreateWindow("Text Display");			// create a titled window
 
     myInit();									// setting up
-
+    read_pixel_map();
 
 
     glutDisplayFunc(myDisplayCallback);		// register a callback
