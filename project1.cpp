@@ -320,8 +320,16 @@ void drawCoordinateSystem() {
 }
 
 void read_pixel_map(){
+    std::string fname;
+    // TODO:  REMOVE THIS WHEN WE TURN IN THE PROJECT.
+    // replace with correct path to execute on Trace.
+#ifdef WINDOWS
+    fname = "C:\\School\\CSC525\\Project 1\\CSC525_Project1\\pixel_map.txt";
+#else
+    fname = "pixel_map.txt";
+#endif
     std::fstream fin;
-    fin.open("pixel_map.txt");
+    fin.open(fname);
     float r, g, b;
     int y = 0;
     int x = 0;
