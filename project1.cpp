@@ -117,7 +117,7 @@ private:
 };
 
 // GLOBALS: for user controlled text to display.
-GLubyte bitmap[];
+GLubyte bitmap[256];
 //Pixel Map
 GLfloat picture[512][512][3];
 
