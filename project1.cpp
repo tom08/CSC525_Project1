@@ -323,7 +323,7 @@ void read_pixel_map(){
     std::string fname;
     // TODO:  REMOVE THIS WHEN WE TURN IN THE PROJECT.
     // replace with correct path to execute on Trace.
-#ifdef WINDOWS
+#ifdef _WIN32
     fname = "C:\\School\\CSC525\\Project 1\\CSC525_Project1\\pixel_map.txt";
 #else
     fname = "pixel_map.txt";
