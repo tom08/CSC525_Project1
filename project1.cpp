@@ -13,78 +13,115 @@
 	3.		Press Ctrl+Shift+B				to BUILD (COMPILE+LINK)
 	4.		Press Ctrl+F5					to EXECUTE
 ==================================================================================================*/
-#include <iostream>
+#include <cmath>
+#include<string>
+#include<iostream>
+#include<fstream>
+#include<vector>
 #include <GL/glut.h>				// include GLUT library
 
 
 //***********************************************************************************
-// GLOBALS: for user controlled text to display.
-GLubyte bitmap[] = {
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0xE0, 0x00, 0x00,
-	0x01, 0xF8, 0xC0, 0x00,
-	0x00, 0x3F, 0xC0, 0x00,
-	0x18, 0x00, 0x40, 0x00,
-	0x3E, 0x00, 0x40, 0x00,
-	0x1F, 0xC0, 0xC0, 0x00,
-	0x03, 0xE0, 0xC0, 0x00,
-	0x00, 0x60, 0xC0, 0x00,
-	0x00, 0x61, 0x80, 0x00,
-	0x00, 0x61, 0x80, 0x00,
-	0x00, 0x61, 0x00, 0x00,
-	0x00, 0x43, 0x00, 0x00,
-	0x00, 0x43, 0x00, 0x00,
-	0x00, 0x46, 0x00, 0x00,
-	0x00, 0xCE, 0x00, 0x00,
-	0x00, 0xCE, 0x00, 0x00,
-	0x00, 0xCE, 0x00, 0x00,
-	0x00, 0xCE, 0x00, 0x00,
-	0x00, 0xCE, 0x00, 0x00,
-	0x00, 0xEE, 0x00, 0x00,
-	0x00, 0xFE, 0x00, 0x00,
-	0x00, 0xFE, 0x10, 0x00,
-	0x00, 0xFE, 0x70, 0x00,
-	0x00, 0xFF, 0xC0, 0x00,
-	0x01, 0xFF, 0x80, 0x00,
-	0x01, 0xFF, 0xF0, 0x00,
-	0x01, 0xFC, 0x0F, 0x00,
-	0x01, 0xFC, 0x03, 0x00,
-	0x01, 0xFC, 0x06, 0x00,
-	0x01, 0xFC, 0x0C, 0x00,
-	0x01, 0xFC, 0x18, 0x00,
-	0x01, 0xFC, 0x30, 0x00,
-	0x00, 0xFC, 0x60, 0x00,
-	0x00, 0xFE, 0xE0, 0x00,
-	0x00, 0xFF, 0xC0, 0x00,
-	0x00, 0xFF, 0x80, 0x00,
-	0x01, 0xFF, 0x00, 0x00,
-	0x03, 0xFE, 0x00, 0x00,
-	0x07, 0x80, 0x00, 0x00,
-	0x07, 0x1C, 0x00, 0x00,
-	0x0C, 0x3F, 0x00, 0x00,
-	0x1C, 0x3F, 0x80, 0x00,
-	0x18, 0x3F, 0xC0, 0x00,
-	0x19, 0xFF, 0xE0, 0x00,
-	0x30, 0x3F, 0xF0, 0x00,
-	0x30, 0x1F, 0xF0, 0x00,
-	0x30, 0x0F, 0xF0, 0x00,
-	0x30, 0x0F, 0xF0, 0x00,
-	0x3E, 0x07, 0xF0, 0x00,
-	0x0F, 0xFB, 0xF0, 0x00,
-	0x00, 0x19, 0xF0, 0x00,
-	0x00, 0x08, 0x40, 0x00,
-	0x00, 0x0F, 0x04, 0x00,
-	0x00, 0x0F, 0x00, 0x00,
-	0x00, 0x00, 0x01, 0xC0,
-	0x00, 0x00, 0x00, 0x40,
-	0x00, 0x00, 0x00, 0x20,
-	0x00, 0x00, 0x00, 0xC0,
-	0x00, 0x00, 0x00, 0x00,
+class Pixel {
+public:
+	Pixel(int x, int y) {
+		xPos = x;
+		yPos = y;
+	}
+
+	Pixel(int x, int y, float color[]) {
+		xPos = x;
+		yPos = y;
+		red = color[0];
+		green = color[1];
+		blue = color[2];
+	}
+
+	Pixel(int x, int y, float r, float g, float b) {
+		xPos = x;
+		yPos = y;
+		red = r;
+		green = g;
+		blue = b;
+	}
+
+	void setXPos(int x) {
+		xPos = x;
+	}
+
+	int getXPos() {
+		return xPos;
+	}
+
+	void setYPos(int y) {
+		yPos = y;
+	}
+
+	int getYPos() {
+		return yPos;
+	}
+
+	int* getPosArray() {
+		int pointArray[2];
+		pointArray[0] = xPos;
+		pointArray[1] = yPos;
+		return pointArray;
+	}
+
+	void setRed(float r) {
+		red = r;
+	}
+
+	float getRed() {
+		return red;
+	}
+
+	void setGreen(float g) {
+		green = g;
+	}
+
+	float getGreen() {
+		return green;
+	}
+
+	void setBlue(float b) {
+		blue = b;
+	}
+
+	float getBlue() {
+		return blue;
+	}
+
+	float* getColorArray() {
+		float colorArray[3];
+		colorArray[0] = red;
+		colorArray[1] = green;
+		colorArray[2] = blue;
+		return colorArray;
+	}
+
+	std::string getPosAsString() {
+		return "[" + std::to_string(xPos) + "," + std::to_string(yPos) + "]";
+	}
+
+	std::string getColorAsString() {
+		return std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue);
+	}
+
+private:
+	int xPos;
+	int yPos;
+	float red;
+	float green;
+	float blue;
 };
 
+// GLOBALS: for user controlled text to display.
+GLubyte bitmap[];
+//Pixel Map
+GLfloat picture[512][512][3];
+
+//Lines
 float slope(int top1, int top2, int bottom1, int bottom2){
 	return float(top2 - top1) / (bottom2 - bottom1);
 
@@ -147,7 +184,73 @@ void drawLine(int x1, int y1, int x2, int y2){
 	}
 	glEnd();
 }
+//
 
+void drawPixelMap() {
+	glRasterPos2i(-256, -256);
+	glDrawPixels(512, 512, GL_RGB, GL_FLOAT, bitmap);
+}
+
+
+//Characters
+void drawChar(int aChar, bool smallText = false) {
+	if (smallText) {
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, aChar);
+	}
+	else {
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, aChar);
+	}
+}
+
+//Mulitple characters - text
+void drawText(std::string text) {
+	glColor3f(.7, .5, .3);
+
+	glRasterPos2i(-200, 30);
+	for (int i = 0; i < text.length(); i++) {
+		drawChar(text[i]);
+	}
+}
+
+//Polygon
+void drawPolygon(std::vector<Pixel> points, bool usePointColor = false) {
+
+	glEnable(GL_POLYGON_STIPPLE);
+	glPolygonStipple(bitmap);
+	glBegin(GL_POLYGON);
+	glColor3f(0, .5, 1);
+	for (int i = 0; i < points.size(); i++) {
+		if (usePointColor) {
+			glColor3fv(points.at(i).getColorArray());
+		}
+		glVertex2iv(points.at(i).getPosArray());
+	}
+	glEnd();
+
+}
+
+//Circle
+float convertToRadians(int degree) {
+	float pi = 3.14159265359;
+	return degree * pi / 180;
+}
+
+void drawCircle(int radius, int xInit = 0, int yInit = 0) {
+	glPointSize(5);
+	glBegin(GL_POINTS);
+	for (int deg = 0; deg <= 360; deg++) {
+		float rad = convertToRadians(deg);
+		float xPos = xInit + radius * cos(rad);
+		float yPos = yInit - radius * sin(rad);
+		glColor3f(0, 1, 0);
+		glVertex2f(xPos, yPos);
+
+	}
+	glEnd();
+}
+
+
+//Bitmap
 void displayBitmap(){
 	glColor3f(0.9, 0.0, 0.6);
 	glRasterPos2i(0, 0);
@@ -155,22 +258,20 @@ void displayBitmap(){
 	glBitmap(27, 65, 0, 0, 0, 0, bitmap);
 }
 
-void drawGrid()
-{ // Draw the Coordinate Grid.
- glPointSize(1);		// change point size back to 1
- glColor3f(0, 0, 0);
- glRasterPos2i(152, 0);
- glutBitmapCharacter(GLUT_BITMAP_8_BY_13, 'X');
- glRasterPos2i(0, 152);
- glutBitmapCharacter(GLUT_BITMAP_8_BY_13, 'Y');
- glBegin(GL_POINTS);	// use points to form X-/Y-axes
-   glColor3f(0, 0, 0);  // change drawing color to black
+void drawCoordinateSystem() {
+	glPointSize(1);		// change point size back to 1
 
-   for (int x=-150; x<=150; x++) // draw X-axis
-     glVertex2i(x, 0);
-   for (int y=-150; y<=150; y++) // draw Y-axis
-     glVertex2i(0, y);
- glEnd();
+	glBegin(GL_POINTS);	// use points to form X-/Y-axes
+	glColor3f(0, 0, 0);			 // change drawing color to black
+	for (int x = -150; x <= 150; x++) // draw X-axis
+		glVertex2i(x, 0);
+	for (int y = -150; y <= 150; y++) // draw Y-axis
+		glVertex2i(0, y);
+	glEnd();
+	glRasterPos2i(5, 140);
+	drawChar('Y', true);
+	glRasterPos2i(140, 5);
+	drawChar('X', true);
 }
 
 //***********************************************************************************
@@ -182,8 +283,8 @@ void myInit()
 //***********************************************************************************
 void myDisplayCallback()
 {glClear(GL_COLOR_BUFFER_BIT);	// draw the background
- drawGrid();
- displayBitmap();
+ drawCoordinateSystem();
+ drawCircle(25);
  glFlush(); // flush out the buffer contents
 }
 
