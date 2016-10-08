@@ -57,6 +57,41 @@ GLubyte tinyTree[] = {
 	0x03, 0xff, 0xf8, //23
 	0x01, 0xbf, 0xd0  //24
 };
+// GLOBALS: Stipple Pattern
+GLubyte shield_pattern[] = {
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0x0F, 0xF0, 0xFF,
+	0xF0, 0xFF, 0xFF, 0x0F,
+	0x0F, 0xFF, 0xFF, 0xF0,
+	0xF0, 0xFF, 0xFF, 0x0F,
+	0xFF, 0x0F, 0xF0, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+};
 //colors
 enum colors {
 	RED, GREEN, BLUE, BROWN, BLACK
@@ -161,7 +196,6 @@ int getRandomCoord(int max, int min) {
 }
 
 
-
 //Lines
 float slope(int top1, int top2, int bottom1, int bottom2){
 	return float(top2 - top1) / (bottom2 - bottom1);
@@ -256,17 +290,21 @@ void drawText(std::string text) {
 }
 
 //Polygon
-void drawPolygon(std::vector<Pixel> points, bool usePointColor = false) {
+void drawPolygon(std::vector<Pixel> points,float color[], bool stipple=true, bool usePointColor = false) {
 
-	glEnable(GL_POLYGON_STIPPLE);
-	glPolygonStipple(tinyTree);
+    if(stipple){
+        glEnable(GL_POLYGON_STIPPLE);
+        glPolygonStipple(shield_pattern);
+    }
+    else
+        glDisable(GL_POLYGON_STIPPLE);
 	glBegin(GL_POLYGON);
-	glColor3f(0, .5, 1);
+	glColor3f(color[0], color[1], color[2]);
 	for (int i = 0; i < points.size(); i++) {
 		if (usePointColor) {
 			glColor3fv(points.at(i).getColorArray());
 		}
-		glVertex2iv(points.at(i).getPosArray());
+		glVertex2i(points.at(i).getXPos(), points.at(i).getYPos());
 	}
 	glEnd();
 
@@ -348,6 +386,22 @@ void displayBitmap(){
 	glBitmap(24, 24, 0, 0, 0, 0, tinyTree);
 }
 
+void drawShield(int x, int y){
+    // Draws a kite sheild starting with the top-right corner
+    float forecolor[] = {0, .5, 1};
+    float backcolor[] = {1, 1, 1};
+    std::vector<Pixel> verteces;
+    int x_offset[] = {0, 0, -25, -50, -50};
+    int y_offset[] = {0, -33, -50, -33, 0};
+    verteces.push_back(Pixel(x, y));
+    for(int i = 0; i < 5; i++){
+        verteces.push_back(Pixel(x + x_offset[i], y + y_offset[i]));
+    }
+    drawPolygon(verteces, backcolor, false);
+    drawPolygon(verteces, forecolor);
+}
+
+
 void drawTinyTrees() {
 	srand(time(NULL));
 	for (int i = 0; i < 5; i++) {
@@ -425,12 +479,13 @@ void myInit()
 
 //***********************************************************************************
 void myDisplayCallback()
-{glClear(GL_COLOR_BUFFER_BIT);	// draw the background
-drawPixelMap();
-drawStickFigure(-30,-30);
- 
- drawTinyTrees();
- glFlush(); // flush out the buffer contents
+{
+    glClear(GL_COLOR_BUFFER_BIT);	// draw the background
+    drawPixelMap();
+    drawTinyTrees();
+    drawStickFigure(-30,-30);
+    drawShield(-200, -200);
+    glFlush(); // flush out the buffer contents
 }
   
 
