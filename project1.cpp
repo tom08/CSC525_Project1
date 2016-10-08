@@ -286,12 +286,16 @@ void drawText(std::string text) {
 }
 
 //Polygon
-void drawPolygon(std::vector<Pixel> points, bool usePointColor = false) {
+void drawPolygon(std::vector<Pixel> points,float color[], bool stipple=true, bool usePointColor = false) {
 
-	glEnable(GL_POLYGON_STIPPLE);
-	glPolygonStipple(shield_pattern);
+    if(stipple){
+        glEnable(GL_POLYGON_STIPPLE);
+        glPolygonStipple(shield_pattern);
+    }
+    else
+        glDisable(GL_POLYGON_STIPPLE);
 	glBegin(GL_POLYGON);
-	glColor3f(0, .5, 1);
+	glColor3f(color[0], color[1], color[2]);
 	for (int i = 0; i < points.size(); i++) {
 		if (usePointColor) {
 			glColor3fv(points.at(i).getColorArray());
@@ -333,6 +337,8 @@ void displayBitmap(){
 
 void drawShield(int x, int y){
     // Draws a kite sheild starting with the top-right corner
+    float forecolor[] = {0, .5, 1};
+    float backcolor[] = {1, 1, 1};
     std::vector<Pixel> verteces;
     int x_offset[] = {0, 0, -25, -50, -50};
     int y_offset[] = {0, -33, -50, -33, 0};
@@ -340,7 +346,8 @@ void drawShield(int x, int y){
     for(int i = 0; i < 5; i++){
         verteces.push_back(Pixel(x + x_offset[i], y + y_offset[i]));
     }
-    drawPolygon(verteces);
+    drawPolygon(verteces, backcolor, false);
+    drawPolygon(verteces, forecolor);
 }
 
 
