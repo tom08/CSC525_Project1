@@ -157,6 +157,41 @@ GLubyte tinyTree[] = {
 	0x03, 0xff, 0xf8, //23
 	0x01, 0xbf, 0xd0  //24
 };
+// GLOBALS: Stipple Pattern
+GLubyte shield_pattern[] = {
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0x0F, 0xF0, 0xFF,
+	0xF0, 0xFF, 0xFF, 0x0F,
+	0x0F, 0xFF, 0xFF, 0xF0,
+	0xF0, 0xFF, 0xFF, 0x0F,
+	0xFF, 0x0F, 0xF0, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+};
 
 
 //Lines
@@ -254,14 +289,14 @@ void drawText(std::string text) {
 void drawPolygon(std::vector<Pixel> points, bool usePointColor = false) {
 
 	glEnable(GL_POLYGON_STIPPLE);
-	glPolygonStipple(tinyTree);
+	glPolygonStipple(shield_pattern);
 	glBegin(GL_POLYGON);
 	glColor3f(0, .5, 1);
 	for (int i = 0; i < points.size(); i++) {
 		if (usePointColor) {
 			glColor3fv(points.at(i).getColorArray());
 		}
-		glVertex2iv(points.at(i).getPosArray());
+		glVertex2i(points.at(i).getXPos(), points.at(i).getYPos());
 	}
 	glEnd();
 
@@ -296,27 +331,24 @@ void displayBitmap(){
 	glBitmap(24, 24, 0, 0, 0, 0, tinyTree);
 }
 
+void drawShield(int x, int y){
+    // Draws a kite sheild starting with the top-right corner
+    std::vector<Pixel> verteces;
+    int x_offset[] = {0, 0, -25, -50, -50};
+    int y_offset[] = {0, -33, -50, -33, 0};
+    verteces.push_back(Pixel(x, y));
+    for(int i = 0; i < 5; i++){
+        verteces.push_back(Pixel(x + x_offset[i], y + y_offset[i]));
+    }
+    drawPolygon(verteces);
+}
+
+
 void drawTinyTrees() {
 	srand(time(NULL));
 	for (int i = 0; i < 5; i++) {
 		displayBitmap();
 	}
-}
-
-void drawCoordinateSystem() {
-	glPointSize(1);		// change point size back to 1
-
-	glBegin(GL_POINTS);	// use points to form X-/Y-axes
-	glColor3f(0, 0, 0);			 // change drawing color to black
-	for (int x = -150; x <= 150; x++) // draw X-axis
-		glVertex2i(x, 0);
-	for (int y = -150; y <= 150; y++) // draw Y-axis
-		glVertex2i(0, y);
-	glEnd();
-	glRasterPos2i(5, 140);
-	drawChar('Y', true);
-	glRasterPos2i(140, 5);
-	drawChar('X', true);
 }
 
 void read_pixel_map(){
@@ -363,6 +395,7 @@ void myDisplayCallback()
     glClear(GL_COLOR_BUFFER_BIT);	// draw the background
     drawPixelMap();
     drawTinyTrees();
+    drawShield(-200, -200);
     glFlush(); // flush out the buffer contents
 }
 
