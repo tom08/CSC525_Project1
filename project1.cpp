@@ -120,6 +120,11 @@ private:
 GLubyte bitmap[256];
 //Pixel Map
 GLfloat picture[512][512][3];
+//colors
+enum colors {
+	RED, GREEN, BLUE, BROWN, BLACK
+};
+
 
 //Lines
 float slope(int top1, int top2, int bottom1, int bottom2){
@@ -137,6 +142,8 @@ int getX(float m, int y, int y1, int x1){
 
 void drawLine(int x1, int y1, int x2, int y2){
 	float m = slope(y1, y2, x1, x2);
+	glColor3f(0, 0, 0);
+	glPointSize(3);
 	glBegin(GL_POINTS);
 	if (m < 1 && m > -1){
 		if (x1 < x2){
@@ -235,14 +242,31 @@ float convertToRadians(int degree) {
 	return degree * pi / 180;
 }
 
-void drawCircle(int radius, int xInit = 0, int yInit = 0) {
+void drawCircle(int radius, enum colors point_color, int xInit = 0, int yInit = 0) {
 	glPointSize(5);
 	glBegin(GL_POINTS);
+	switch (point_color) {
+	case RED:
+		glColor3f(1, 0, 0);
+		break;
+	case GREEN:
+		glColor3f(0, 1, 0);
+		break;
+
+	case BLUE:
+		glColor3f(0, 0, 1);
+		break;
+	case BROWN:
+		glColor3f(.7, .3, .3);
+		break;
+	default:
+		glColor3f(0, 0, 0);
+	}
 	for (int deg = 0; deg <= 360; deg++) {
 		float rad = convertToRadians(deg);
 		float xPos = xInit + radius * cos(rad);
 		float yPos = yInit - radius * sin(rad);
-		glColor3f(0, 1, 0);
+		
 		glVertex2f(xPos, yPos);
 
 	}
@@ -253,11 +277,12 @@ void drawSmile(int radius, int xInit = 0, int yInit = 0){
 	float smileRadius = radius * .5;
 	glBegin(GL_POINTS);
 	glPointSize(10);
-	glColor3f(0, 1, 0);
+	
+	glColor3f(.7, 0, 0);
 	for (int deg = 180; deg <= 360; deg++) {
 		float rad = convertToRadians(deg);
 		float xPos = xInit + (smileRadius * cos(rad));
-		float yPos = yInit - (smileRadius * sin(rad));
+		float yPos = yInit + (smileRadius * sin(rad));
 		glVertex2f(xPos, yPos);
 
 	}
@@ -266,14 +291,14 @@ void drawSmile(int radius, int xInit = 0, int yInit = 0){
 
 void drawEyes(int radius, int xInit = 0, int yInit = 0) {
 	float xPos = xInit + (radius *.50);
-	float yPos = yInit - xPos;
+	float yPos = yInit + (radius *.50);
 	int eyeRadius = 5;
-	drawCircle(eyeRadius, xPos, yPos);
-	drawCircle(eyeRadius, xPos * -1, yPos);
+	drawCircle(eyeRadius, BLUE, xPos, yPos);
+	drawCircle(eyeRadius, BLUE, xPos -radius, yPos);
 }
 
 void drawSmiley(int radius, int xInit = 0, int yInit = 0) {
-	drawCircle(radius, xInit, yInit);
+	drawCircle(radius, BROWN, xInit, yInit);
 	drawSmile(radius, xInit, yInit);
 	drawEyes(radius, xInit, yInit);
 }
@@ -303,8 +328,18 @@ void drawCoordinateSystem() {
 	drawChar('X', true);
 }
 
+//x and y are the bottom left of the stick figure
 void drawStickFigure(int x, int y) {
-	drawLine(x, y, x + 20, y + 20);
+	int size = 20;
+	int leg_endpointX = x + size;
+	int leg_endpointY = y + size;
+	int leg_two_beginningX = x + (size * 2);
+	drawLine(x, y, leg_endpointX, leg_endpointY);  //draw first, left leg
+	drawLine(leg_two_beginningX, y, leg_endpointX, leg_endpointY);  //draw second, right leg
+	int body_endpointY = leg_endpointY + (size * 2);
+	drawLine(leg_endpointX, leg_endpointY, leg_endpointX, body_endpointY);  //draw body line
+	drawLine(leg_endpointX - (size / 2), body_endpointY - (size / 2), leg_endpointX + (size / 2), body_endpointY - (size / 2));  //draw arms
+	drawSmiley(25, leg_endpointX, body_endpointY + size);  //draw head
 }
 //***********************************************************************************
 void myInit()
@@ -315,7 +350,7 @@ void myInit()
 //***********************************************************************************
 void myDisplayCallback()
 {glClear(GL_COLOR_BUFFER_BIT);	// draw the background
-drawSmiley(50, 50, -50);
+drawStickFigure(-30,-30);
  glFlush(); // flush out the buffer contents
 }
 
