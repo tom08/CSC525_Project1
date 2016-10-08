@@ -281,9 +281,7 @@ void drawChar(int aChar, bool smallText = false) {
 
 //Mulitple characters - text
 void drawText(std::string text) {
-	glColor3f(.7, .5, .3);
 
-	glRasterPos2i(-200, 30);
 	for (int i = 0; i < text.length(); i++) {
 		drawChar(text[i]);
 	}
@@ -381,7 +379,7 @@ void drawSmiley(int radius, int xInit = 0, int yInit = 0) {
 //Bitmap
 void displayBitmap(){
 	glColor3f(0, .9, 0);
-	glRasterPos2i(getRandomCoord(windowX, -(windowX / 2)), getRandomCoord(windowY, -(windowY / 2)));
+	glRasterPos2i(getRandomCoord(windowX, -(windowX / 2)), getRandomCoord((windowY/6), -(windowY/2)));
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glBitmap(24, 24, 0, 0, 0, 0, tinyTree);
 }
@@ -409,22 +407,6 @@ void drawTinyTrees() {
 	}
 }
 
-void drawCoordinateSystem() {
-	glPointSize(1);		// change point size back to 1
-
-	glBegin(GL_POINTS);	// use points to form X-/Y-axes
-	glColor3f(0, 0, 0);			 // change drawing color to black
-	for (int x = -150; x <= 150; x++) // draw X-axis
-		glVertex2i(x, 0);
-	for (int y = -150; y <= 150; y++) // draw Y-axis
-		glVertex2i(0, y);
-	glEnd();
-	glRasterPos2i(5, 140);
-	drawChar('Y', true);
-	glRasterPos2i(140, 5);
-	drawChar('X', true);
-}
-
 //x and y are the bottom left of the stick figure
 void drawStickFigure(int x, int y) {
 	int size = 20;
@@ -439,7 +421,15 @@ void drawStickFigure(int x, int y) {
 	drawSmiley(25, leg_endpointX, body_endpointY + size);  //draw head
 }
 
-void read_pixel_map(){
+void displayTitle(){
+    std::string title_str = "A Shrubbery!";
+	glColor3f(0.0, 0.0, 0.0);
+    glRasterPos2i(-200, 300);
+    drawText(title_str);
+
+}
+
+void readPixelMap(){
     std::string fname;
     // TODO:  REMOVE THIS WHEN WE TURN IN THE PROJECT.
     // replace with correct path to execute on Trace.
@@ -485,6 +475,7 @@ void myDisplayCallback()
     drawTinyTrees();
     drawStickFigure(-30,-30);
     drawShield(-200, -200);
+    displayTitle();
     glFlush(); // flush out the buffer contents
 }
   
@@ -506,7 +497,7 @@ int main()
     glutCreateWindow("Text Display");			// create a titled window
 
     myInit();									// setting up
-    read_pixel_map();
+    readPixelMap();
 
 
     glutDisplayFunc(myDisplayCallback);		// register a callback
