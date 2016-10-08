@@ -23,6 +23,45 @@
 
 
 //***********************************************************************************
+// GLOBALS: for user controlled text to display.
+GLubyte bitmap[256];
+//Pixel Map
+GLfloat picture[675][900][3];
+// Window dimentions
+int windowX = 900;
+int windowY = 676;
+//10 - A, 11 - B, 12 - C, 13 - D, 14 - E, 15 - F
+GLubyte tinyTree[] = {
+	0x00, 0x00, 0x00,  //1
+	0x00, 0x00, 0x00,  //2
+	0x07, 0xc0, 0x00, //3
+	0x01, 0xc0, 0x00, //4
+	0x00, 0x80, 0x00, //5
+	0x00, 0xc0, 0x00, //6
+	0x00, 0x40, 0x00, //7
+	0x00, 0x40, 0x00, //8
+	0x00, 0x60, 0x00, //9
+	0x00, 0x38, 0x00, //10
+	0x00, 0x28, 0x00, //11
+	0x00, 0xe8, 0x00, //12
+	0x00, 0xff, 0x00, //13
+	0x0f, 0xf7, 0xf8, //14
+	0x0f, 0xff, 0xf8, //15
+	0x0f, 0xff, 0xfe, //16
+	0x07, 0xff, 0xfe, //17
+	0x0f, 0xff, 0xfe, //18
+	0x0f, 0xff, 0xfc, //19
+	0x1f, 0xff, 0xfe, //20
+	0x1f, 0xff, 0xfe, //21
+	0x0f, 0xff, 0xf8, //22
+	0x03, 0xff, 0xf8, //23
+	0x01, 0xbf, 0xd0  //24
+};
+//colors
+enum colors {
+	RED, GREEN, BLUE, BROWN, BLACK
+};
+
 class Pixel {
 public:
 	Pixel(int x, int y) {
@@ -121,41 +160,6 @@ int getRandomCoord(int max, int min) {
 	return rand() % max + min;
 }
 
-// GLOBALS: for user controlled text to display.
-//10 - A, 11 - B, 12 - C, 13 - D, 14 - E, 15 - F
-GLubyte tinyTree[] = {
-	0x00, 0x00, 0x00,  //1
-	0x00, 0x00, 0x00,  //2
-	0x07, 0xc0, 0x00, //3
-	0x01, 0xc0, 0x00, //4
-	0x00, 0x80, 0x00, //5
-	0x00, 0xc0, 0x00, //6
-	0x00, 0x40, 0x00, //7
-	0x00, 0x40, 0x00, //8
-	0x00, 0x60, 0x00, //9
-	0x00, 0x38, 0x00, //10
-	0x00, 0x28, 0x00, //11
-	0x00, 0xe8, 0x00, //12
-	0x00, 0xff, 0x00, //13
-	0x0f, 0xf7, 0xf8, //14
-	0x0f, 0xff, 0xf8, //15
-	0x0f, 0xff, 0xfe, //16
-	0x07, 0xff, 0xfe, //17
-	0x0f, 0xff, 0xfe, //18
-	0x0f, 0xff, 0xfc, //19
-	0x1f, 0xff, 0xfe, //20
-	0x1f, 0xff, 0xfe, //21
-	0x0f, 0xff, 0xf8, //22
-	0x03, 0xff, 0xf8, //23
-	0x01, 0xbf, 0xd0  //24
-};
-
-//Pixel Map
-GLfloat picture[512][512][3];
-//colors
-enum colors {
-	RED, GREEN, BLUE, BROWN, BLACK
-};
 
 
 //Lines
@@ -226,8 +230,8 @@ void drawLine(int x1, int y1, int x2, int y2){
 //
 
 void drawPixelMap() {
-	glRasterPos2i(-256, -256);
-	glDrawPixels(512, 512, GL_RGB, GL_FLOAT, picture);
+	glRasterPos2i(-(windowX / 2), -(windowY / 2));
+	glDrawPixels(900, 675, GL_RGB, GL_FLOAT, picture);
 }
 
 
@@ -339,7 +343,7 @@ void drawSmiley(int radius, int xInit = 0, int yInit = 0) {
 //Bitmap
 void displayBitmap(){
 	glColor3f(0, .9, 0);
-	glRasterPos2i(getRandomCoord(400, -200), getRandomCoord(400, -200));
+	glRasterPos2i(getRandomCoord(windowX, -(windowX / 2)), getRandomCoord(windowY, -(windowY / 2)));
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glBitmap(24, 24, 0, 0, 0, 0, tinyTree);
 }
@@ -380,10 +384,43 @@ void drawStickFigure(int x, int y) {
 	drawLine(leg_endpointX - (size / 2), body_endpointY - (size / 2), leg_endpointX + (size / 2), body_endpointY - (size / 2));  //draw arms
 	drawSmiley(25, leg_endpointX, body_endpointY + size);  //draw head
 }
+
+void read_pixel_map(){
+    std::string fname;
+    // TODO:  REMOVE THIS WHEN WE TURN IN THE PROJECT.
+    // replace with correct path to execute on Trace.
+#ifdef _WIN32
+    fname = "C:\\School\\CSC525\\Project 1\\CSC525_Project1\\pixel_map.txt";
+#else
+    fname = "pixel_map.txt";
+#endif
+    std::fstream fin;
+    fin.open(fname);
+    float r, g, b;
+    int y = 0;
+    int x = 0;
+    if(fin.is_open()){
+        while(fin >> r){
+            fin >> g;
+            fin >> b;
+            picture[y][x][0] = r;
+            picture[y][x][1] = g;
+            picture[y][x][2] = b;
+            x++;
+            if(x == 900){
+                x = 0;
+                y++;
+            }
+        }
+    }
+}
+
 //***********************************************************************************
 void myInit()
 {glClearColor(1, 1, 1, 0);			// specify a background clor: white 
- gluOrtho2D(-200, 200, -200, 200);  // specify a viewing area
+ int x = windowX / 2;
+ int y = windowY / 2;
+ gluOrtho2D(-x, x, -y, y);  // specify a viewing area
 }
 
 //***********************************************************************************
@@ -401,19 +438,20 @@ drawStickFigure(-30,-30);
 int main()
 {
     //====================================================================//
-    // These lines are only here so I can work on this at home
+    // These lines are only here so I (Thomas) can work on this at home
     // since the only c++ compiler available to me is g++
+    // (Visual Studio and Linux don't play well together)
     int argc = 1;
     char *argv[1] = {(char*)"Something"};
     glutInit(&argc, argv);
     //====================================================================//
 
-    glutInitWindowSize(400, 400);				// specify a window size
+    glutInitWindowSize(windowX, windowY);				// specify a window size
     glutInitWindowPosition(100, 0);			// specify a window position
     glutCreateWindow("Text Display");			// create a titled window
 
     myInit();									// setting up
-
+    read_pixel_map();
 
 
     glutDisplayFunc(myDisplayCallback);		// register a callback
