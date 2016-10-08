@@ -249,6 +249,35 @@ void drawCircle(int radius, int xInit = 0, int yInit = 0) {
 	glEnd();
 }
 
+void drawSmile(int radius, int xInit = 0, int yInit = 0){
+	float smileRadius = radius * .5;
+	glBegin(GL_POINTS);
+	glPointSize(10);
+	glColor3f(0, 1, 0);
+	for (int deg = 180; deg <= 360; deg++) {
+		float rad = convertToRadians(deg);
+		float xPos = xInit + (smileRadius * cos(rad));
+		float yPos = yInit - (smileRadius * sin(rad));
+		glVertex2f(xPos, yPos);
+
+	}
+	glEnd();
+}
+
+void drawEyes(int radius, int xInit = 0, int yInit = 0) {
+	float xPos = xInit + (radius *.50);
+	float yPos = yInit - xPos;
+	int eyeRadius = 5;
+	drawCircle(eyeRadius, xPos, yPos);
+	drawCircle(eyeRadius, xPos * -1, yPos);
+}
+
+void drawSmiley(int radius, int xInit = 0, int yInit = 0) {
+	drawCircle(radius, xInit, yInit);
+	drawSmile(radius, xInit, yInit);
+	drawEyes(radius, xInit, yInit);
+}
+
 
 //Bitmap
 void displayBitmap(){
@@ -274,6 +303,9 @@ void drawCoordinateSystem() {
 	drawChar('X', true);
 }
 
+void drawStickFigure(int x, int y) {
+	drawLine(x, y, x + 20, y + 20);
+}
 //***********************************************************************************
 void myInit()
 {glClearColor(1, 1, 1, 0);			// specify a background clor: white 
@@ -283,8 +315,7 @@ void myInit()
 //***********************************************************************************
 void myDisplayCallback()
 {glClear(GL_COLOR_BUFFER_BIT);	// draw the background
- drawCoordinateSystem();
- drawCircle(25);
+drawSmiley(50, 50, -50);
  glFlush(); // flush out the buffer contents
 }
 
