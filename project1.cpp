@@ -18,6 +18,7 @@
 #include<iostream>
 #include<fstream>
 #include<vector>
+#include <time.h>
 #include <GL/glut.h>				// include GLUT library
 
 
@@ -124,6 +125,39 @@ private:
 	float blue;
 };
 
+int getRandomCoord(int max, int min) {
+	return rand() % max + min;
+}
+
+// GLOBALS: for user controlled text to display.
+//10 - A, 11 - B, 12 - C, 13 - D, 14 - E, 15 - F
+GLubyte tinyTree[] = {
+	0x00, 0x00, 0x00,  //1
+	0x00, 0x00, 0x00,  //2
+	0x07, 0xc0, 0x00, //3
+	0x01, 0xc0, 0x00, //4
+	0x00, 0x80, 0x00, //5
+	0x00, 0xc0, 0x00, //6
+	0x00, 0x40, 0x00, //7
+	0x00, 0x40, 0x00, //8
+	0x00, 0x60, 0x00, //9
+	0x00, 0x38, 0x00, //10
+	0x00, 0x28, 0x00, //11
+	0x00, 0xe8, 0x00, //12
+	0x00, 0xff, 0x00, //13
+	0x0f, 0xf7, 0xf8, //14
+	0x0f, 0xff, 0xf8, //15
+	0x0f, 0xff, 0xfe, //16
+	0x07, 0xff, 0xfe, //17
+	0x0f, 0xff, 0xfe, //18
+	0x0f, 0xff, 0xfc, //19
+	0x1f, 0xff, 0xfe, //20
+	0x1f, 0xff, 0xfe, //21
+	0x0f, 0xff, 0xf8, //22
+	0x03, 0xff, 0xf8, //23
+	0x01, 0xbf, 0xd0  //24
+};
+
 
 //Lines
 float slope(int top1, int top2, int bottom1, int bottom2){
@@ -220,7 +254,7 @@ void drawText(std::string text) {
 void drawPolygon(std::vector<Pixel> points, bool usePointColor = false) {
 
 	glEnable(GL_POLYGON_STIPPLE);
-	glPolygonStipple(bitmap);
+	glPolygonStipple(tinyTree);
 	glBegin(GL_POLYGON);
 	glColor3f(0, .5, 1);
 	for (int i = 0; i < points.size(); i++) {
@@ -256,10 +290,17 @@ void drawCircle(int radius, int xInit = 0, int yInit = 0) {
 
 //Bitmap
 void displayBitmap(){
-	glColor3f(0.9, 0.0, 0.6);
-	glRasterPos2i(0, 0);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-	glBitmap(27, 65, 0, 0, 0, 0, bitmap);
+	glColor3f(0, .9, 0);
+	glRasterPos2i(getRandomCoord(windowX, -(windowX / 2)), getRandomCoord(windowY, -(windowY / 2)));
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glBitmap(24, 24, 0, 0, 0, 0, tinyTree);
+}
+
+void drawTinyTrees() {
+	srand(time(NULL));
+	for (int i = 0; i < 5; i++) {
+		displayBitmap();
+	}
 }
 
 void drawCoordinateSystem() {
@@ -313,6 +354,7 @@ void myDisplayCallback()
 {
     glClear(GL_COLOR_BUFFER_BIT);	// draw the background
     drawPixelMap();
+    drawTinyTrees();
     glFlush(); // flush out the buffer contents
 }
 
@@ -321,8 +363,9 @@ void myDisplayCallback()
 int main()
 {
     //====================================================================//
-    // These lines are only here so I can work on this at home
+    // These lines are only here so I (Thomas) can work on this at home
     // since the only c++ compiler available to me is g++
+    // (Visual Studio and Linux don't play well together)
     int argc = 1;
     char *argv[1] = {(char*)"Something"};
     glutInit(&argc, argv);
