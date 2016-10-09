@@ -299,7 +299,6 @@ void drawPolygon(std::vector<Pixel> points,float color[], bool stipple=true, boo
 	glBegin(GL_POLYGON);
 	glColor3f(color[0], color[1], color[2]);
 	for (int i = 0; i < points.size(); i++) {
-		glVertex2iv(points.at(i).getPosArray());
 		if (usePointColor) {
 			glColor3fv(points.at(i).getColorArray());
 		}
@@ -508,8 +507,8 @@ void myDisplayCallback()
     glClear(GL_COLOR_BUFFER_BIT);	// draw the background
     drawPixelMap();
     drawTinyTrees();
-	drawStickFigure(-30, -30, false);
-	drawStickFigure(20, 20, true);
+	drawStickFigure(-60, -250, false);
+	drawStickFigure(40, -240, true);
     displayTitle();
     glFlush(); // flush out the buffer contents
 }
