@@ -57,6 +57,41 @@ GLubyte tinyTree[] = {
 	0x03, 0xff, 0xf8, //23
 	0x01, 0xbf, 0xd0  //24
 };
+// GLOBALS: Stipple Pattern
+GLubyte shield_pattern[] = {
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0x0F, 0xF0, 0xFF,
+	0xF0, 0xFF, 0xFF, 0x0F,
+	0x0F, 0xFF, 0xFF, 0xF0,
+	0xF0, 0xFF, 0xFF, 0x0F,
+	0xFF, 0x0F, 0xF0, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+	0xFF, 0xF0, 0x0F, 0xFF,
+};
 //colors
 enum colors {
 	RED, GREEN, BLUE, BROWN, BLACK
@@ -161,7 +196,6 @@ int getRandomCoord(int max, int min) {
 }
 
 
-
 //Lines
 float slope(int top1, int top2, int bottom1, int bottom2){
 	return float(top2 - top1) / (bottom2 - bottom1);
@@ -247,23 +281,29 @@ void drawChar(int aChar, bool smallText = false) {
 
 //Mulitple characters - text
 void drawText(std::string text) {
-	glColor3f(.7, .5, .3);
 
-	glRasterPos2i(-200, 30);
 	for (int i = 0; i < text.length(); i++) {
 		drawChar(text[i]);
 	}
 }
 
 //Polygon
-void drawPolygon(std::vector<Pixel> points) {
+void drawPolygon(std::vector<Pixel> points,float color[], bool stipple=true, bool usePointColor = false) {
 
-	glEnable(GL_POLYGON_STIPPLE);
-	glPolygonStipple(tinyTree);
+    if(stipple){
+        glEnable(GL_POLYGON_STIPPLE);
+        glPolygonStipple(shield_pattern);
+    }
+    else
+        glDisable(GL_POLYGON_STIPPLE);
 	glBegin(GL_POLYGON);
-	glColor3f(0, .5, 1);
+	glColor3f(color[0], color[1], color[2]);
 	for (int i = 0; i < points.size(); i++) {
 		glVertex2iv(points.at(i).getPosArray());
+		if (usePointColor) {
+			glColor3fv(points.at(i).getColorArray());
+		}
+		glVertex2i(points.at(i).getXPos(), points.at(i).getYPos());
 	}
 	glEnd();
 
@@ -340,10 +380,26 @@ void drawSmiley(int radius, int xInit = 0, int yInit = 0) {
 //Bitmap
 void displayBitmap(){
 	glColor3f(0, .9, 0);
-	glRasterPos2i(getRandomCoord(windowX, -(windowX / 2)), getRandomCoord(windowY, -(windowY / 2)));
+	glRasterPos2i(getRandomCoord(windowX, -(windowX / 2)), getRandomCoord((windowY/6), -(windowY/2)));
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glBitmap(24, 24, 0, 0, 0, 0, tinyTree);
 }
+
+void drawShield(int x, int y){
+    // Draws a kite sheild starting with the top-right corner
+    float forecolor[] = {0, .5, 1};
+    float backcolor[] = {1, 1, 1};
+    std::vector<Pixel> verteces;
+    int x_offset[] = {0, 0, -25, -50, -50};
+    int y_offset[] = {0, -33, -50, -33, 0};
+    verteces.push_back(Pixel(x, y));
+    for(int i = 0; i < 5; i++){
+        verteces.push_back(Pixel(x + x_offset[i], y + y_offset[i]));
+    }
+    drawPolygon(verteces, backcolor, false);
+    drawPolygon(verteces, forecolor);
+}
+
 
 void drawTinyTrees() {
 	srand(time(NULL));
@@ -351,23 +407,6 @@ void drawTinyTrees() {
 		displayBitmap();
 	}
 }
-
-void drawCoordinateSystem() {
-	glPointSize(1);		// change point size back to 1
-
-	glBegin(GL_POINTS);	// use points to form X-/Y-axes
-	glColor3f(0, 0, 0);			 // change drawing color to black
-	for (int x = -150; x <= 150; x++) // draw X-axis
-		glVertex2i(x, 0);
-	for (int y = -150; y <= 150; y++) // draw Y-axis
-		glVertex2i(0, y);
-	glEnd();
-	glRasterPos2i(5, 140);
-	drawChar('Y', true);
-	glRasterPos2i(140, 5);
-	drawChar('X', true);
-}
-
 
 void drawSword(int x, int y, bool left_facing) {
 	if (left_facing) {
@@ -409,13 +448,23 @@ void drawStickFigure(int x, int y, bool left_hand) {
 
 	if (left_hand) {
 		drawSword(leg_endpointX - size, body_endpointY - size, left_hand);
+		drawShield(leg_endpointX + size + 40, body_endpointY - size + 15);
 	}
 	else {
 		drawSword(leg_endpointX + size, body_endpointY - size, left_hand);
+		drawShield(leg_endpointX - size + 10, body_endpointY - size + 15);
 	}
 }
 
-void read_pixel_map(){
+void displayTitle(){
+    std::string title_str = "A Shrubbery!";
+	glColor3f(0.0, 0.0, 0.0);
+    glRasterPos2i(-200, 300);
+    drawText(title_str);
+
+}
+
+void readPixelMap(){
     std::string fname;
     // TODO:  REMOVE THIS WHEN WE TURN IN THE PROJECT.
     // replace with correct path to execute on Trace.
@@ -455,12 +504,14 @@ void myInit()
 
 //***********************************************************************************
 void myDisplayCallback()
-{glClear(GL_COLOR_BUFFER_BIT);	// draw the background
-drawPixelMap();
-drawStickFigure(-30,-30, false);
-drawStickFigure(20, 20, true);
- drawTinyTrees();
- glFlush(); // flush out the buffer contents
+{
+    glClear(GL_COLOR_BUFFER_BIT);	// draw the background
+    drawPixelMap();
+    drawTinyTrees();
+	drawStickFigure(-30, -30, false);
+	drawStickFigure(20, 20, true);
+    displayTitle();
+    glFlush(); // flush out the buffer contents
 }
   
 
@@ -481,7 +532,7 @@ int main()
     glutCreateWindow("Text Display");			// create a titled window
 
     myInit();									// setting up
-    read_pixel_map();
+    readPixelMap();
 
 
     glutDisplayFunc(myDisplayCallback);		// register a callback
