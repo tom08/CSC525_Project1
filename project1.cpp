@@ -299,6 +299,7 @@ void drawPolygon(std::vector<Pixel> points,float color[], bool stipple=true, boo
 	glBegin(GL_POLYGON);
 	glColor3f(color[0], color[1], color[2]);
 	for (int i = 0; i < points.size(); i++) {
+		glVertex2iv(points.at(i).getPosArray());
 		if (usePointColor) {
 			glColor3fv(points.at(i).getColorArray());
 		}
@@ -407,8 +408,33 @@ void drawTinyTrees() {
 	}
 }
 
+void drawSword(int x, int y, bool left_facing) {
+	if (left_facing) {
+		int handle_endpointX = x - 10;
+		int handle_endpointY = y + 10;
+		drawLine(x, y, handle_endpointX, handle_endpointY);
+		int handguard_startY = handle_endpointY + 10;
+		int handguard_endX = handle_endpointX - 10;
+		int handguard_endY = handle_endpointY - 10;
+		drawLine(x, handguard_startY, handguard_endX, handguard_endY);
+
+		drawLine(handle_endpointX, handle_endpointY, handle_endpointX - 30, handle_endpointY + 30);
+	}
+	else {
+		int handle_endpointX = x + 10;
+		int handle_endpointY = y + 10;
+		drawLine(x, y, handle_endpointX, handle_endpointY);
+		int handguard_startY = handle_endpointY + 10;
+		int handguard_endX = handle_endpointX + 10;
+		int handguard_endY = handle_endpointY - 10;
+		drawLine(x, handguard_startY, handguard_endX, handguard_endY);
+
+		drawLine(handle_endpointX, handle_endpointY, handle_endpointX + 30, handle_endpointY + 30);
+	}
+}
+
 //x and y are the bottom left of the stick figure
-void drawStickFigure(int x, int y) {
+void drawStickFigure(int x, int y, bool left_hand) {
 	int size = 20;
 	int leg_endpointX = x + size;
 	int leg_endpointY = y + size;
@@ -417,8 +443,17 @@ void drawStickFigure(int x, int y) {
 	drawLine(leg_two_beginningX, y, leg_endpointX, leg_endpointY);  //draw second, right leg
 	int body_endpointY = leg_endpointY + (size * 2);
 	drawLine(leg_endpointX, leg_endpointY, leg_endpointX, body_endpointY);  //draw body line
-	drawLine(leg_endpointX - (size / 2), body_endpointY - (size / 2), leg_endpointX + (size / 2), body_endpointY - (size / 2));  //draw arms
+	drawLine(leg_endpointX - size, body_endpointY - size, leg_endpointX + size, body_endpointY - size);  //draw arms
 	drawSmiley(25, leg_endpointX, body_endpointY + size);  //draw head
+
+	if (left_hand) {
+		drawSword(leg_endpointX - size, body_endpointY - size, left_hand);
+		drawShield(leg_endpointX + size + 40, body_endpointY - size + 15);
+	}
+	else {
+		drawSword(leg_endpointX + size, body_endpointY - size, left_hand);
+		drawShield(leg_endpointX - size + 10, body_endpointY - size + 15);
+	}
 }
 
 void displayTitle(){
@@ -473,8 +508,8 @@ void myDisplayCallback()
     glClear(GL_COLOR_BUFFER_BIT);	// draw the background
     drawPixelMap();
     drawTinyTrees();
-    drawStickFigure(-30,-30);
-    drawShield(-200, -200);
+	drawStickFigure(-30, -30, false);
+	drawStickFigure(20, 20, true);
     displayTitle();
     glFlush(); // flush out the buffer contents
 }
