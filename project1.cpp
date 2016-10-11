@@ -118,7 +118,7 @@ private:
 };
 
 // GLOBALS: for user controlled text to display.
-const GLubyte bitmap[256];
+GLubyte bitmap[256];
 //Pixel Map
 GLfloat picture[675][900][3];
 // Window dimentions
