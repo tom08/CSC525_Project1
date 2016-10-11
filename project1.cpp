@@ -14,10 +14,10 @@
 	4.		Press Ctrl+F5					to EXECUTE
 ==================================================================================================*/
 #include <cmath>
-#include<string>
-#include<iostream>
-#include<fstream>
-#include<vector>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <vector>
 #include <time.h>
 #include <GL/glut.h>				// include GLUT library
 
@@ -299,6 +299,7 @@ void drawPolygon(std::vector<Pixel> points,float color[], bool stipple=true, boo
 	glBegin(GL_POLYGON);
 	glColor3f(color[0], color[1], color[2]);
 	for (int i = 0; i < points.size(); i++) {
+		glVertex2i(points.at(i).getXPos(), points.at(i).getYPos());
 		if (usePointColor) {
 			glColor3fv(points.at(i).getColorArray());
 		}
@@ -463,6 +464,27 @@ void displayTitle(){
 
 }
 
+void writePixelMap(){
+    float display[512][512][3];
+    std::string fname;
+    std::ofstream fout;
+    glReadPixels(0, 0, 512, 512, GL_RGB, GL_FLOAT, display);
+#ifdef _WIN32
+    fname = "C:\\School\\CSC525\\Project 1\\CSC525_Project1\\pixel_map_output.txt";
+#else
+    fname = "pixel_map_output.txt";
+#endif
+    fout.open(fname);
+    if(fout.is_open()){
+        for(int y = 0; y < 512; y++){
+            for(int x = 0; x < 512; x++){
+                fout << display[y][x][0] << ' ' << display[y][x][1] << ' ' << display[y][x][2] << ' ';
+            }
+        }
+    }
+    fout.close();
+}
+
 void readPixelMap(){
     std::string fname;
     // TODO:  REMOVE THIS WHEN WE TURN IN THE PROJECT.
@@ -510,6 +532,7 @@ void myDisplayCallback()
 	drawStickFigure(-60, -250, false);
 	drawStickFigure(40, -240, true);
     displayTitle();
+    writePixelMap();
     glFlush(); // flush out the buffer contents
 }
   
