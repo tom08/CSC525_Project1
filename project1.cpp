@@ -562,7 +562,7 @@ void myInit()
 void myDisplayCallback()
 {
     glClear(GL_COLOR_BUFFER_BIT);	// draw the background
-    drawPixelMap();
+    drawPixelMap(); //draw background picture
     drawTinyTrees();
 	drawStickFigure(-30, -30, false);
 	drawStickFigure(20, 20, true);
