@@ -1,11 +1,19 @@
 /*==================================================================================================
  PROGRAMMER:			Thomas Kroll, Nathan Kroll
  COURSE:				CSC 525/625
- MODIFIED BY:			Thomas Kroll, kroll001
- LAST MODIFIED DATE:	9/26/2016
- DESCRIPTION:			
+ MODIFIED BY:			Thomas Kroll:kroll001, Nathan Kroll:Kroll1483
+ LAST MODIFIED DATE:	10/10/2016
+ DESCRIPTION:			This program displays multiple objects on a 900x676 window.  The first thing
+                        displayed is a pixel map, which is used as the background of this scene.
+                        The pixel map is read from the file "pixel_map.txt" to be displayed.
+                        Next the program displays a green Bitmap of tiny bushes randomly across the
+                        bottom of the screen.  Next is the (slightly creepy) stick figures, wich are
+                        composed of line segments, circles and partial circles.  The figures'
+                        shields are made of a pattern filled polygon rendered on top of a solid
+                        polygon. Lastly, the text "A Shrubbery!" is written across the top of the
+                        window.
  NOTE:					N/A
- FILES:					project1.cpp, (projProject.sln, ...)
+ FILES:					project1.cpp, pixel_map.txt (projProject.sln, ...)
  IDE/COMPILER:			MicroSoft Visual Studio 2013
  INSTRUCTION FOR COMPILATION AND EXECUTION:
 	1.		Double click on myCPPproj.sln	to OPEN the project
@@ -27,6 +35,7 @@
 GLubyte bitmap[256];
 //Pixel Map
 GLfloat picture[675][900][3];
+GLfloat display_out[512][512][3];
 // Window dimentions
 int windowX = 900;
 int windowY = 676;
@@ -465,10 +474,9 @@ void displayTitle(){
 }
 
 void writePixelMap(){
-    float display[512][512][3];
     std::string fname;
     std::ofstream fout;
-    glReadPixels(0, 0, 512, 512, GL_RGB, GL_FLOAT, display);
+    glReadPixels(0, 0, 512, 512, GL_RGB, GL_FLOAT, display_out);
 #ifdef _WIN32
     fname = "C:\\School\\CSC525\\Project 1\\CSC525_Project1\\pixel_map_output.txt";
 #else
@@ -478,10 +486,12 @@ void writePixelMap(){
     if(fout.is_open()){
         for(int y = 0; y < 512; y++){
             for(int x = 0; x < 512; x++){
-                fout << display[y][x][0] << ' ' << display[y][x][1] << ' ' << display[y][x][2] << ' ';
+                fout << display_out[y][x][0] << ' ' << display_out[y][x][1] << ' ' << display_out[y][x][2] << ' ';
             }
         }
     }
+    else
+        std::cout << fname << " was not able to be opened" << std::endl;
     fout.close();
 }
 
@@ -513,6 +523,9 @@ void readPixelMap(){
             }
         }
     }
+    else
+        std::cout << fname << " was unable to be opened" << std::endl;
+    fin.close();
 }
 
 //***********************************************************************************
