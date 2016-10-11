@@ -187,7 +187,7 @@ const GLubyte shield_pattern[] = {
 	0xFF, 0xF0, 0x0F, 0xFF,
 };
 //colors
-const enum colors {
+enum colors {
 	RED, GREEN, BLUE, BROWN, BLACK
 };
 
