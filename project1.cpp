@@ -235,7 +235,7 @@ void drawPolygon(std::vector<Pixel> points,float color[], bool stipple=true, boo
 	glColor3f(color[0], color[1], color[2]);
 	for (int i = 0; i < points.size(); i++) {
 		if (usePointColor) {
-			glColor3fv(points.at(i).getColorArray());
+			glColor3f(points.at(i).getRed(), points.at(i).getGreen(), points.at(i).getBlue());
 		}
 		glVertex2i(points.at(i).getXPos(), points.at(i).getYPos());
 	}
