@@ -8,11 +8,11 @@
                         The pixel map is read from the file "pixel_map.txt" to be displayed.
                         Next the program displays a green Bitmap of tiny bushes (or broccoli)
                         randomly across the bottom of the screen.
-                        Next is the (slightly creepy) stick figures, wich are
+                        Next is the (slightly creepy) stick figures, which are
                         composed of line segments, circles and partial circles.  The figures'
                         shields are made of a pattern filled polygon rendered on top of a solid
-                        polygon. Lastly, the text "A Shrubbery!" is written across the top of the
-                        window.
+                        polygon. Lastly, the text "The Battle of Broccoli Fields" is written across
+                        the top of the window.
  NOTE:					N/A
  FILES:					project1.cpp, pixel_map.txt (projProject.sln, ...)
  IDE/COMPILER:			MicroSoft Visual Studio 2013
